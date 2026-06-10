@@ -160,6 +160,15 @@ export function SearchClient() {
     },
   ]);
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const memoryIdsRef = useRef<{ threadId: string; resourceId: string } | null>(null);
+
+  function getMemoryIds() {
+    memoryIdsRef.current ??= {
+      threadId: `bunjang-chat-${globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)}`,
+      resourceId: "bunjang-next-ui",
+    };
+    return memoryIdsRef.current;
+  }
 
   const subtitle = useMemo(() => {
     const lastResult = [...messages].reverse().find((message) => message.role === "assistant" && message.result);
@@ -180,10 +189,19 @@ export function SearchClient() {
     setLoading(true);
 
     try {
+      const memoryIds = getMemoryIds();
       const response = await fetch("/api/search", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ query: searchQuery, maxItems, finalCandidateCount, withDetail, useLlm }),
+        body: JSON.stringify({
+          query: searchQuery,
+          maxItems,
+          finalCandidateCount,
+          withDetail,
+          useLlm,
+          threadId: memoryIds.threadId,
+          resourceId: memoryIds.resourceId,
+        }),
       });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.message ?? "검색 실패");

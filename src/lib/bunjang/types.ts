@@ -6,6 +6,8 @@ export const BunjangSearchRequestSchema = z.object({
   finalCandidateCount: z.coerce.number().int().min(1).max(20).default(8),
   withDetail: z.boolean().default(false),
   useLlm: z.boolean().default(false),
+  threadId: z.string().trim().min(1).optional(),
+  resourceId: z.string().trim().min(1).optional(),
 });
 
 export type BunjangSearchRequest = z.infer<typeof BunjangSearchRequestSchema>;

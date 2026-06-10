@@ -1,5 +1,6 @@
 import { Agent } from "@mastra/core/agent";
 import type { MastraModelConfig } from "@mastra/core/llm";
+import { Memory } from "@mastra/memory";
 import { z } from "zod";
 import { searchBunjangListings } from "@/lib/bunjang/cli";
 import type { BunjangSearchRequest, BunjangSearchResponse } from "@/lib/bunjang/types";
@@ -66,6 +67,12 @@ export const bunjangSearchAgent = new Agent({
 - read-only. 찜/채팅/구매 액션 금지.
 - tool이 실패한 경우에만 실패 사실을 말하고, 임의 대체 상품 추천으로 넘어가지 마라.`,
   model: resolveMastraModel(),
+  memory: new Memory({
+    options: {
+      lastMessages: 20,
+      generateTitle: true,
+    },
+  }),
   tools: {
     bunjangSearch: bunjangSearchTool,
   },
@@ -83,6 +90,14 @@ export async function runBunjangSearchAgent(request: BunjangSearchRequest): Prom
         structuredOutput: {
           schema: AgentOutputSchema,
         },
+        ...(request.threadId && request.resourceId
+          ? {
+              memory: {
+                thread: request.threadId,
+                resource: request.resourceId,
+              },
+            }
+          : {}),
       },
     )
     .catch(() => null);
