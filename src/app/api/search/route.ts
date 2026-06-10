@@ -8,7 +8,16 @@ export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: "bad_request", message: "JSON 본문이 잘못됨" },
+        { status: 400 },
+      );
+    }
+
     const input = BunjangSearchRequestSchema.parse(body);
     const result = await runBunjangSearchAgent(input);
     return NextResponse.json(result);

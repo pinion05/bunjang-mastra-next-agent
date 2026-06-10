@@ -42,6 +42,14 @@ export MASTRA_MODEL=openai/gpt-4o-mini
 pnpm dev
 ```
 
+OpenRouter도 지원한다. `MASTRA_MODEL`에는 OpenRouter 모델 ID를 그대로 지정한다.
+
+```bash
+export OPENROUTER_API_KEY=...
+export MASTRA_MODEL=deepseek/deepseek-v4-flash
+pnpm dev
+```
+
 ## 재활용 지점
 
 - dependency: `bunjang-cli: ^0.2.1` (published from `pinion05/bunjangcli`)

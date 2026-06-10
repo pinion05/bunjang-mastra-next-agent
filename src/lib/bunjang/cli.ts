@@ -1,4 +1,5 @@
 import { execFile } from "node:child_process";
+import fs from "node:fs";
 import path from "node:path";
 import { promisify } from "node:util";
 import { normalizeBunjangItem, rankBunjangListings } from "./normalize";
@@ -6,8 +7,22 @@ import type { BunjangListing, BunjangSearchRequest, BunjangSearchResponse } from
 
 const execFileAsync = promisify(execFile);
 
+function findProjectRoot(start = process.cwd()): string {
+  let current = start;
+
+  while (true) {
+    if (fs.existsSync(path.join(current, "package.json")) && fs.existsSync(path.join(current, "node_modules", ".bin", "bunjang-cli"))) {
+      return current;
+    }
+
+    const parent = path.dirname(current);
+    if (parent === current) return process.cwd();
+    current = parent;
+  }
+}
+
 function bunjangCliBin(): string {
-  return process.env.BUNJANG_CLI_BIN ?? path.join(process.cwd(), "node_modules", ".bin", "bunjang-cli");
+  return process.env.BUNJANG_CLI_BIN ?? path.join(findProjectRoot(), "node_modules", ".bin", "bunjang-cli");
 }
 
 function parseJsonFromStdout(stdout: string): unknown {
@@ -43,7 +58,7 @@ export async function collectBunjangListings(request: BunjangSearchRequest): Pro
   if (request.withDetail) args.push("--with-detail");
 
   const { stdout, stderr } = await execFileAsync(bunjangCliBin(), args, {
-    cwd: process.cwd(),
+    cwd: findProjectRoot(),
     timeout: Number(process.env.BUNJANG_CLI_TIMEOUT_MS ?? 90_000),
     maxBuffer: 16 * 1024 * 1024,
     env: process.env,
