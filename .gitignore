@@ -13,13 +13,14 @@
 # testing
 /coverage
 
-# next.js
-/.next/
+# Mastra
 /.mastra/
-/out/
+mastra-memory.db*
 
-# production
+# build output
 /build
+/dist
+/out
 
 # misc
 .DS_Store
@@ -33,11 +34,6 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
-mastra-memory.db*
-
-# vercel
-.vercel
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
