@@ -1,45 +1,36 @@
-# Bunjang Mastra Next Agent
+# Bunjang Mastra Agent
 
-`pinion05/bunjangcli`를 재활용한 번개장터 검색 에이전트 MVP.
+`pinion05/bunjangcli`를 재활용한 번개장터 Mastra 검색 에이전트 MVP.
 
 ## 구성
 
-- Next.js App Router UI
-- `/api/search` Route Handler
 - Mastra `Agent` + `createTool`
 - `bunjang-cli` subprocess wrapper
+- `@mastra/memory` + `@mastra/libsql` local memory
 - read-only 검색/랭킹만 수행
 
 ## 실행
 
 ```bash
 pnpm install
-pnpm exec playwright install chromium
-pnpm dev
+set -a; . ./.env.local; set +a
+pnpm mastra:dev
 ```
 
 브라우저:
 
 ```text
-http://localhost:3000
-```
-
-## API
-
-```bash
-curl -s http://localhost:3000/api/search \
-  -H 'content-type: application/json' \
-  -d '{"query":"아이폰 15 프로","maxItems":12,"finalCandidateCount":5}' | jq
+http://localhost:4111
 ```
 
 ## Mastra LLM 모드
 
-기본은 deterministic 랭킹이다. OpenAI 키가 있으면 UI에서 `Mastra LLM` 체크 후 실행 가능.
+기본 실행 경로는 Mastra Studio다. OpenAI 키가 있으면 아래처럼 실행한다.
 
 ```bash
 export OPENAI_API_KEY=...
 export MASTRA_MODEL=openai/gpt-4o-mini
-pnpm dev
+pnpm mastra:dev
 ```
 
 OpenRouter도 지원한다. `MASTRA_MODEL`에는 OpenRouter 모델 ID를 그대로 지정한다.
@@ -47,12 +38,12 @@ OpenRouter도 지원한다. `MASTRA_MODEL`에는 OpenRouter 모델 ID를 그대�
 ```bash
 export OPENROUTER_API_KEY=...
 export MASTRA_MODEL=deepseek/deepseek-v4-flash
-pnpm dev
+pnpm mastra:dev
 ```
 
 ## Mastra 대시보드에서 직접 사용
 
-Next.js 채팅 UI 대신 Mastra Studio에서 에이전트를 직접 테스트할 수 있다.
+Mastra Studio에서 에이전트를 직접 테스트할 수 있다.
 
 ### 1) 환경변수 준비
 
